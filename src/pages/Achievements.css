@@ -1,0 +1,155 @@
+.achievements-page {
+  padding-top: 80px;
+}
+
+.achievements-hero {
+  background: var(--bg-primary);
+}
+
+.achievements-timeline {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  padding: 2rem 0;
+}
+
+.achievements-timeline::before {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.achievement-item {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  position: relative;
+  padding-left: 4rem;
+}
+
+.achievement-icon {
+  position: absolute;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow);
+  z-index: 1;
+}
+
+.achievement-icon > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  line-height: 1;
+}
+
+.achievement-icon span,
+.achievement-icon input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: transparent !important;
+  border: none !important;
+  font-size: 1.5rem;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1;
+}
+
+/* Hide the edit indicator in achievement icons */
+.achievement-icon .edit-indicator {
+  display: none !important;
+}
+
+/* Ensure the editable text inside icon is centered */
+.achievement-icon .editable-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.achievement-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.achievement-content:hover {
+  transform: translateX(5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
+  box-shadow: 
+    0 10px 30px rgba(255, 107, 53, 0.2),
+    0 0 20px rgba(255, 107, 53, 0.1);
+}
+
+.achievement-date {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.achievement-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.achievement-content p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.achievement-link {
+  color: var(--primary-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.achievement-link:hover {
+  color: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+  .achievements-timeline::before {
+    left: 20px;
+  }
+
+  .achievement-item {
+    padding-left: 3rem;
+  }
+
+  .achievement-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}
+
+

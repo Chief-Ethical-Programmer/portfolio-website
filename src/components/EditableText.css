@@ -1,0 +1,56 @@
+.editable-text {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.editable-text:hover {
+  background: rgba(0, 255, 136, 0.1);
+  outline: 1px dashed var(--primary-color);
+}
+
+.edit-indicator {
+  opacity: 0;
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  transition: opacity 0.2s ease;
+}
+
+.editable-text:hover .edit-indicator {
+  opacity: 1;
+}
+
+.editable-input,
+.editable-textarea {
+  width: 100%;
+  background: var(--bg-card);
+  border: 2px solid var(--primary-color);
+  color: var(--text-primary);
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+/* Inline editing for tags and small text */
+span.editable-input {
+  padding: 0.25rem 0.5rem;
+  min-width: 60px;
+  display: inline-block;
+}
+
+.editable-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: 'Courier New', monospace;
+  line-height: 1.6;
+}
+
+.editable-input:focus,
+.editable-textarea:focus {
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+}
