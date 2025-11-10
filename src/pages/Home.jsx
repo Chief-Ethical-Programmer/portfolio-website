@@ -753,9 +753,10 @@ const Home = () => {
           <div className="footer-content">
             <p className="copyright">
               © {new Date().getFullYear()} <EditableText
-                value="Your Name"
+                value={displayName}
                 tag="span"
                 storageKey="footer-name"
+                onChange={handleNameChange}
               />. All rights reserved.
             </p>
           </div>
