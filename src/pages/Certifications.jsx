@@ -10,7 +10,9 @@ import {
   fetchCertifications, 
   createCertification, 
   updateCertification as updateCertificationDB, 
-  deleteCertification as deleteCertificationDB 
+  deleteCertification as deleteCertificationDB,
+  fetchHomeData,
+  updateHomeData
 } from '../services/database'
 import { migrateCertificationsToSupabase } from '../utils/dataMigration'
 
@@ -22,20 +24,30 @@ const Certifications = () => {
   const [badgesError, setBadgesError] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [activeTab, setActiveTab] = useState('certifications')
+  const [pageDescription, setPageDescription] = useState('Professional certifications and achievements earned through learning and dedication')
+  const [isLoading, setIsLoading] = useState(true)
   
   // Replace with your actual Credly username
   const credlyUsername = 'kaushik-barman.f500d323'
 
   useEffect(() => {
     const initializeData = async () => {
-      // Migrate localStorage data to Supabase if needed
-      await migrateCertificationsToSupabase()
-      
-      // Load certifications from Supabase
-      await loadCertifications()
-      
-      // Load Credly badges
-      await loadCredlyBadges()
+      setIsLoading(true)
+      try {
+        // Migrate localStorage data to Supabase if needed
+        await migrateCertificationsToSupabase()
+        
+        // Load certifications from Supabase
+        await loadCertifications()
+        
+        // Load Credly badges
+        await loadCredlyBadges()
+        
+        // Load page description
+        await loadPageDescription()
+      } finally {
+        setIsLoading(false)
+      }
     }
     
     initializeData()
@@ -73,6 +85,18 @@ const Certifications = () => {
     } finally {
       setLoadingBadges(false)
     }
+  }
+
+  const loadPageDescription = async () => {
+    const data = await fetchHomeData()
+    if (data && data.certifications_description) {
+      setPageDescription(data.certifications_description)
+    }
+  }
+
+  const handlePageDescriptionChange = async (newValue) => {
+    setPageDescription(newValue)
+    await updateHomeData({ certifications_description: newValue })
   }
 
   const handleUpdateCertification = async (index, field, value) => {
@@ -157,16 +181,40 @@ const Certifications = () => {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="certifications-page" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{ 
+          width: '60px',
+          height: '60px',
+          border: '4px solid var(--border-color)',
+          borderTop: '4px solid var(--primary-color)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Loading certifications...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="certifications-page">
       <section className="certifications-hero section">
         <div className="container">
           <h1 className="section-title">Certifications & Badges</h1>
           <EditableText 
-            value="Professional certifications and achievements earned through learning and dedication"
+            value={pageDescription}
             tag="p"
             className="section-subtitle"
             multiline={true}
+            onChange={handlePageDescriptionChange}
             storageKey="certifications-subtitle"
           />
 

@@ -27,6 +27,7 @@ const Home = () => {
   const [description, setDescription] = useState('Welcome to my security portfolio! I\'m passionate about protecting digital assets, identifying vulnerabilities, and securing systems. Explore my security projects, achievements, and certifications in the field of cybersecurity.')
   const [profilePhoto, setProfilePhoto] = useState(null)
   const [uploading, setUploading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   
   const [socialLinks, setSocialLinks] = useState([
     { id: 1, name: 'Email', url: '', logo: '', type: 'email' },
@@ -75,18 +76,23 @@ const Home = () => {
 
   useEffect(() => {
     const initializeData = async () => {
-      // Load home data (name, profile photo)
-      await loadHomeData()
-      
-      // Migrate localStorage data to Supabase if needed
-      await migrateQuickLinksToSupabase()
-      await migrateSocialLinksToSupabase()
-      
-      // Load Quick Links from Supabase
-      await loadQuickLinks()
-      
-      // Load Social Links from Supabase
-      await loadSocialLinks()
+      setIsLoading(true)
+      try {
+        // Load home data (name, profile photo)
+        await loadHomeData()
+        
+        // Migrate localStorage data to Supabase if needed
+        await migrateQuickLinksToSupabase()
+        await migrateSocialLinksToSupabase()
+        
+        // Load Quick Links from Supabase
+        await loadQuickLinks()
+        
+        // Load Social Links from Supabase
+        await loadSocialLinks()
+      } finally {
+        setIsLoading(false)
+      }
     }
     
     initializeData()
@@ -322,6 +328,30 @@ const Home = () => {
     }
   }
 
+  // Show loading spinner while data is being fetched
+  if (isLoading) {
+    return (
+      <div className="home" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{ 
+          width: '60px',
+          height: '60px',
+          border: '4px solid var(--border-color)',
+          borderTop: '4px solid var(--primary-color)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Loading your portfolio...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="home">
       <section className="hero">
@@ -396,7 +426,49 @@ const Home = () => {
                         <stop offset="100%" stopColor="#8b5cf6" />
                       </linearGradient>
                     </defs>
-                    <text x="140" y="168" fontSize="84" fill="white" textAnchor="middle" fontFamily="Arial">YOU</text>
+                    {/* Animated loading spinner */}
+                    <circle 
+                      cx="140" 
+                      cy="140" 
+                      r="50" 
+                      stroke="white" 
+                      strokeWidth="6" 
+                      fill="none"
+                      strokeDasharray="157 157"
+                      strokeLinecap="round"
+                      opacity="0.3"
+                    />
+                    <circle 
+                      cx="140" 
+                      cy="140" 
+                      r="50" 
+                      stroke="white" 
+                      strokeWidth="6" 
+                      fill="none"
+                      strokeDasharray="78.5 157"
+                      strokeLinecap="round"
+                      opacity="0.9"
+                    >
+                      <animateTransform
+                        attributeName="transform"
+                        type="rotate"
+                        from="0 140 140"
+                        to="360 140 140"
+                        dur="1s"
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                    <text 
+                      x="140" 
+                      y="220" 
+                      fontSize="16" 
+                      fill="white" 
+                      textAnchor="middle" 
+                      fontFamily="Arial"
+                      opacity="0.8"
+                    >
+                      Loading...
+                    </text>
                   </svg>
                 )}
                 

@@ -4,16 +4,21 @@ import { projects as defaultProjects } from '../data/projectsData'
 import { useEditMode } from '../context/EditModeContext'
 import EditableText from '../components/EditableText'
 import logger from '../utils/logger'
-import { fetchProjects, createProject, updateProject as updateProjectDB, deleteProject } from '../services/database'
+import { fetchProjects, createProject, updateProject as updateProjectDB, deleteProject, fetchHomeData, updateHomeData } from '../services/database'
 
 const Projects = () => {
   const { isEditMode } = useEditMode()
   const [projects, setProjects] = useState([])
   const [filter, setFilter] = useState('All')
   const [loading, setLoading] = useState(true)
+  const [pageDescription, setPageDescription] = useState('A collection of projects I\'ve worked on, showcasing my skills and creativity')
   
   useEffect(() => {
-    loadProjects()
+    const initializeData = async () => {
+      await loadProjects()
+      await loadPageDescription()
+    }
+    initializeData()
   }, [])
   
   const loadProjects = async () => {
@@ -44,6 +49,18 @@ const Projects = () => {
       setProjects([])
     }
     setLoading(false)
+  }
+
+  const loadPageDescription = async () => {
+    const data = await fetchHomeData()
+    if (data && data.projects_description) {
+      setPageDescription(data.projects_description)
+    }
+  }
+
+  const handlePageDescriptionChange = async (newValue) => {
+    setPageDescription(newValue)
+    await updateHomeData({ projects_description: newValue })
   }
   
   const updateProject = async (id, updates) => {
@@ -108,8 +125,23 @@ const Projects = () => {
 
   if (loading) {
     return (
-      <div className="projects-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div style={{ color: 'var(--primary-color)', fontSize: '1.2rem' }}>Loading projects...</div>
+      <div className="projects-page" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{ 
+          width: '60px',
+          height: '60px',
+          border: '4px solid var(--border-color)',
+          borderTop: '4px solid var(--primary-color)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Loading projects...</p>
       </div>
     )
   }
@@ -120,10 +152,11 @@ const Projects = () => {
         <div className="container">
           <h1 className="section-title">My Projects</h1>
           <EditableText 
-            value="A collection of projects I've worked on, showcasing my skills and creativity"
+            value={pageDescription}
             tag="p"
             className="section-subtitle"
             multiline={true}
+            onChange={handlePageDescriptionChange}
             storageKey="projects-subtitle"
           />
 

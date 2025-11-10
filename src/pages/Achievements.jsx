@@ -7,21 +7,33 @@ import {
   fetchAchievements, 
   createAchievement, 
   updateAchievement as updateAchievementDB, 
-  deleteAchievement as deleteAchievementDB 
+  deleteAchievement as deleteAchievementDB,
+  fetchHomeData,
+  updateHomeData
 } from '../services/database'
 import { migrateAchievementsToSupabase } from '../utils/dataMigration'
 
 const Achievements = () => {
   const { isEditMode } = useEditMode()
   const [achievements, setAchievements] = useState([])
+  const [pageDescription, setPageDescription] = useState('Milestones and accomplishments throughout my journey')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const initializeData = async () => {
-      // Migrate localStorage data to Supabase if needed
-      await migrateAchievementsToSupabase()
-      
-      // Load achievements from Supabase
-      await loadAchievements()
+      setIsLoading(true)
+      try {
+        // Migrate localStorage data to Supabase if needed
+        await migrateAchievementsToSupabase()
+        
+        // Load achievements from Supabase
+        await loadAchievements()
+        
+        // Load page description from Supabase
+        await loadPageDescription()
+      } finally {
+        setIsLoading(false)
+      }
     }
     
     initializeData()
@@ -35,6 +47,18 @@ const Achievements = () => {
       // Use default data if Supabase is empty
       setAchievements(defaultAchievements)
     }
+  }
+
+  const loadPageDescription = async () => {
+    const data = await fetchHomeData()
+    if (data && data.achievements_description) {
+      setPageDescription(data.achievements_description)
+    }
+  }
+
+  const handlePageDescriptionChange = async (newValue) => {
+    setPageDescription(newValue)
+    await updateHomeData({ achievements_description: newValue })
   }
 
   const handleUpdateAchievement = async (index, field, value) => {
@@ -77,16 +101,40 @@ const Achievements = () => {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="achievements-page" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{ 
+          width: '60px',
+          height: '60px',
+          border: '4px solid var(--border-color)',
+          borderTop: '4px solid var(--primary-color)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Loading achievements...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="achievements-page">
       <section className="achievements-hero section">
         <div className="container">
           <h1 className="section-title">Achievements</h1>
           <EditableText 
-            value="Milestones and accomplishments throughout my journey"
+            value={pageDescription}
             tag="p"
             className="section-subtitle"
             multiline={true}
+            onChange={handlePageDescriptionChange}
             storageKey="achievements-subtitle"
           />
 

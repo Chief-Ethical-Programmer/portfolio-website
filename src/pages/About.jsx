@@ -34,13 +34,21 @@ const About = () => {
   const [aboutDescription, setAboutDescription] = useState("When I'm not studying security vulnerabilities, I enjoy participating in CTF competitions, contributing to security tools, writing security research blog posts, and continuously learning about emerging threats and defense strategies.")
   const [profilePhoto, setProfilePhoto] = useState(null)
   const [uploading, setUploading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // Refresh data when component mounts or when returning to page
   useEffect(() => {
-    loadSkills()
-    loadExperience()
-    loadEducation()
-    loadProfilePhoto()
+    const loadAllData = async () => {
+      setLoading(true)
+      await Promise.all([
+        loadSkills(),
+        loadExperience(),
+        loadEducation(),
+        loadProfilePhoto()
+      ])
+      setLoading(false)
+    }
+    loadAllData()
   }, [isEditMode])
 
   const loadSkills = async () => {
@@ -288,6 +296,30 @@ const About = () => {
     } finally {
       setUploading(false)
     }
+  }
+
+  // Show loading spinner while data is being fetched
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{
+          width: '50px',
+          height: '50px',
+          border: '4px solid var(--border-color)',
+          borderTop: '4px solid var(--primary-color)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Loading...</p>
+      </div>
+    )
   }
 
   return (
